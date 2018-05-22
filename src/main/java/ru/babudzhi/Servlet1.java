@@ -1,6 +1,5 @@
 package ru.babudzhi;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -9,16 +8,27 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-import org.h2.Driver;
-
-
 
 @WebServlet("/welcome")
 public class Servlet1 extends HttpServlet {
 
-    String dname3 = "";
-    String dname2 = "";
-    String dname1 = "";
+    protected String dname3 = "";
+    protected String dname2 = "";
+    protected String dname1 = "";
+
+    public void Servlet(String name1, String name2, String name3){
+        dname1 = name1;
+        dname2 = name2;
+        dname3 = name3;
+    }
+
+    private static final String CREATE_QUERY =
+            "CREATE TABLE TEST123 (name3 VARCHAR(45), name1 VARCHAR(45), name2 varchar (45))";
+
+    private String DATA_QUERY = "";
+
+    private static final String DELETE_QUERY =
+            "DROP TABLE IF EXISTS TEST123";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
@@ -30,14 +40,15 @@ public class Servlet1 extends HttpServlet {
 
             dname3 = new String(request.getParameter("lastname").getBytes("iso-8859-1"), "utf8");
             session.setAttribute("name3", dname3);
-            dname1 = (String) session.getAttribute("name");
-            dname2 = (String) session.getAttribute("name2");
-            dname3 = (String) session.getAttribute("name3");
 
             out.println("<h2>Поздравляю с третьим этапом!</h2> " +
                     "<p>Добро пожаловать, " +
                     session.getAttribute("name3") + " " + session.getAttribute("name") + " " + session.getAttribute("name2") + "</p>"
             );
+
+
+            Servlet((String) session.getAttribute("name"), (String) session.getAttribute("name2"), (String) session.getAttribute("name3"));
+            DATA_QUERY = "INSERT INTO TEST123 VALUES ('" + dname3 + "','" + dname1 + "','" + dname2 + "')";
 
             try {
                 DriverManager.registerDriver(new org.h2.Driver());
@@ -72,11 +83,7 @@ public class Servlet1 extends HttpServlet {
         }
     }
 
-    private static final String CREATE_QUERY =
-            "CREATE TABLE TEST123 (name3 VARCHAR(45), name1 VARCHAR(45), name2 varchar (45))";
+    public static void main(String[] args) {
 
-    private static final String DATA_QUERY =
-            "INSERT INTO TEST123 (dname3,dname1,dname2)";
-    private static final String DELETE_QUERY =
-            "DROP TABLE IF EXISTS TEST123";
+    }
 }
